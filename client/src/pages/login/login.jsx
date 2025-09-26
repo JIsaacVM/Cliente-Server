@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Login from './pages/login/login.jsx'
-import './App.css'; // Puedes añadir estilos básicos aquí
 
 // Definimos la URL base de nuestra API
 const API_URL = 'http://localhost:5000/api/tasks';
 
-function App() {
-  return (
-    <Login />
-  )
+function Login() {
+    return (
+        <h1 color='white'>Login</h1>
+    )
 }
 
-export default App;
+export default Login;
