@@ -8,8 +8,8 @@ const router = Router();
 // Validaciones
 const nameVal = body('nombre').optional().isString().isLength({ max: 120 });
 const emailVal = body('correo').optional().isEmail().isLength({ max: 120 });
-const userVal  = body('usuario').optional().isString().isLength({ max: 120 });
-const passVal  = body('password').optional().isString().isLength({ min: 8 });
+const userVal = body('usuario').optional().isString().isLength({ max: 120 });
+const passVal = body('password').optional().isString().isLength({ min: 8 });
 
 // Registro (rol=1 por defecto)
 router.post(
@@ -44,6 +44,18 @@ router.put(
     body('rol').optional().isIn([1, 2])
   ],
   update
+);
+
+router.post(
+  '/register-with-status',
+  [
+    body('nombre').isString().isLength({ max: 120 }),
+    body('correo').isEmail().isLength({ max: 120 }),
+    body('usuario').isString().isLength({ max: 120 }),
+    body('password').isString().isLength({ min: 8 }),
+    body('estatus').isIn(['Activo', 'Inactivo']) // validación de estatus
+  ],
+  registerWithStatus
 );
 
 module.exports = router;
