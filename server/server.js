@@ -12,7 +12,7 @@ app.use(express.json()); // Permite al servidor entender JSON
 // Rutas
 app.use('/api/tasks', require('./routes/tasks'));
 
-app.use('/api/users', require('./routes/users'));
+app.use('/api/users', require('./routes/userRoutes'));
 
 // Conexión a la base de datos
 const uri = process.env.MONGO_URI;
