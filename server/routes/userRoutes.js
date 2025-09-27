@@ -18,7 +18,7 @@ router.post(
     body('nombre').isString().isLength({ max: 120 }),
     body('correo').isEmail().isLength({ max: 120 }),
     body('usuario').isString().isLength({ max: 120 }),
-    body('password').isString().isLength({ min: 8 })
+    body('password').isString().withMessage('password debe ser una cadena').isLength({ min: 8 }).withMessage('password debe tener al menos 8 caracteres')
   ],
   register
 );
