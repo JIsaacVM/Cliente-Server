@@ -9,9 +9,7 @@ const makeToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES || '7d' }
   );
 
-/**
- * Registro 1: estatus = 'Activo' por default
- */
+/** Registro 1: estatus = 'Activo' por default */
 const register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -25,18 +23,14 @@ const register = async (req, res) => {
     const exists = await User.findOne({ $or: [{ correo }, { usuario }] });
     if (exists) return res.status(409).json({ message: 'Correo o usuario ya registrado' });
 
-    // estatus forzado a 'Activo'
     const user = await User.create({ nombre, correo, usuario, password, rol: 1, estatus: 'Activo' });
-
     return res.status(201).json({ id: user._id, nombre: user.nombre, rol: user.rol, estatus: user.estatus });
   } catch (e) {
     return res.status(500).json({ message: 'Error al registrar', error: e.message });
   }
 };
 
-/**
- * Registro 2: el cliente elige el estatus ('Activo' | 'Inactivo')
- */
+/** Registro 2: el cliente elige el estatus ('Activo' | 'Inactivo') */
 const registerWithStatus = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -57,7 +51,6 @@ const registerWithStatus = async (req, res) => {
     if (exists) return res.status(409).json({ message: 'Correo o usuario ya registrado' });
 
     const user = await User.create({ nombre, correo, usuario, password, rol: 1, estatus });
-
     return res.status(201).json({ id: user._id, nombre: user.nombre, rol: user.rol, estatus: user.estatus });
   } catch (e) {
     return res.status(500).json({ message: 'Error al registrar', error: e.message });
@@ -66,45 +59,22 @@ const registerWithStatus = async (req, res) => {
 
 const login = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log('[LOGIN ERRORS]', errors.array());
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
     const { usuario, password } = req.body;
     const loginId = String(usuario || '').trim().toLowerCase();
 
-    console.log('[LOGIN BODY RAW]', { usuario, password });
+    const user = await User.findOne({ $or: [{ usuario: loginId }, { correo: loginId }] });
+    if (!user) return res.status(401).json({ message: 'Credenciales inválidas' });
 
-    const user = await User.findOne({
-      $or: [{ usuario: loginId }, { correo: loginId }]
-    });
-
-    if (!user) {
-      console.log('[LOGIN USER?] No se encontró usuario con', loginId);
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-
-    console.log('[LOGIN USER FOUND]', {
-      id: user._id?.toString?.(),
-      usuario: user.usuario,
-      correo: user.correo,
-      storedPassword: user.password
-    });
-
-    // Comparación directa (texto plano)
     if (String(user.password) !== String(password)) {
-      console.log('[LOGIN FAILED] password mismatch');
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
     const token = makeToken(user);
-    console.log('[LOGIN SUCCESS]', { id: user._id?.toString?.(), rol: user.rol });
-
     return res.json({ token, user: { id: user._id, nombre: user.nombre, rol: user.rol } });
   } catch (e) {
-    console.error('[LOGIN ERROR]', e);
     return res.status(500).json({ message: 'Error al iniciar sesión', error: e.message });
   }
 };
@@ -129,7 +99,6 @@ const update = async (req, res) => {
     if (correo  !== undefined) correo  = String(correo ).trim().toLowerCase();
     if (usuario !== undefined) usuario = String(usuario).trim().toLowerCase();
 
-    // validar estatus si viene
     if (estatus !== undefined) {
       const allowed = ['Activo', 'Inactivo'];
       if (!allowed.includes(String(estatus))) {

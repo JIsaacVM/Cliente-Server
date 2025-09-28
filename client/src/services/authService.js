@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // === Config base de API ===
-const API_BASE = import.meta?.env?.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta?.env?.VITE_API_URL || 'http://localhost:4001/api';
 const USERS_BASE = `${API_BASE}/users`; // ajusta si montaste el router en otro path
 
 // === Storage helpers ===
